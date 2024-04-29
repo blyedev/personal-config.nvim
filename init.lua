@@ -74,7 +74,7 @@ require('lazy').setup({
   require 'blyedev.plugins.format',
   require 'blyedev.plugins.autocomplete',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.debug',
+  require 'blyedev.plugins.debug',
   require 'blyedev.plugins.mini',
   require 'blyedev.plugins.treesitter',
 }, {
