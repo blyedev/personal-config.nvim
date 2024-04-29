@@ -1,5 +1,5 @@
 -- telescope.nvim
-local M
+local M = {}
 
 function M.setup()
   -- [[ Configure Telescope ]]

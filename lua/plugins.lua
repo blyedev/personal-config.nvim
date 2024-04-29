@@ -51,7 +51,7 @@ require('lazy').setup({
     opts = { signs = false },
   },
 
-  {
+  { -- Telescope is telescope
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     branch = '0.1.x',
