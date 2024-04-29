@@ -72,7 +72,6 @@ require('lazy').setup({
     config = config 'plugin.telescope',
   },
 
-  require 'plugin.telescope',
   require 'plugin.lsp',
   require 'plugin.format',
   require 'plugin.autocomplete',
