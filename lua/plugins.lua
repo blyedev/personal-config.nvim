@@ -21,7 +21,10 @@ end
 
 require('lazy').setup({
   'tpope/vim-sleuth',
-  'numToStr/Comment.nvim',
+  { -- Lets you comment lines selected
+    'numToStr/Comment.nvim',
+    opts = {},
+  },
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -31,7 +34,7 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter',
-    config = config 'plugin.which-key',
+    config = config 'plugin.which_key',
   },
 
   { -- You can easily change to a different colorscheme.
@@ -72,13 +75,96 @@ require('lazy').setup({
     config = config 'plugin.telescope',
   },
 
-  require 'plugin.lsp',
-  require 'plugin.format',
-  require 'plugin.autocomplete',
-  require 'plugin.lint',
-  require 'plugin.debug',
-  require 'plugin.mini',
-  require 'plugin.treesitter',
+  { -- mason for installing lsps
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+
+      { 'j-hui/fidget.nvim', opts = {} },
+      { 'folke/neodev.nvim', opts = {} },
+    },
+    config = config 'plugin.nvim_lspconfig',
+  },
+
+  {
+    'mfussenegger/nvim-jdtls',
+    config = config 'plugin.nvim_jdtls',
+  },
+
+  { -- Formatters
+    'stevearc/conform.nvim',
+    lazy = false,
+    keys = require('plugin.conform').keys,
+    opts = require('plugin.conform').opts,
+  },
+
+  {
+    'hrsh7th/nvim-cmp',
+    event = 'InsertEnter',
+    dependencies = {
+      {
+        'L3MON4D3/LuaSnip',
+        build = (function()
+          -- Build Step is needed for regex support in snippets
+          -- This step is not supported in many windows environments
+          -- Remove the below condition to re-enable on windows
+          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+            return
+          end
+          return 'make install_jsregexp'
+        end)(),
+      },
+      'saadparwaiz1/cmp_luasnip',
+
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-path',
+    },
+    config = config 'plugin.nvim_cmp',
+  },
+
+  { -- Linting
+    'mfussenegger/nvim-lint',
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = config 'plugin.nvim_lint',
+  },
+
+  { -- Debugger
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      -- Creates a beautiful debugger UI
+      'rcarriga/nvim-dap-ui',
+
+      -- Required dependency for nvim-dap-ui
+      'nvim-neotest/nvim-nio',
+
+      -- Installs the debug adapters for you
+      'williamboman/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
+
+      -- Add your own debuggers here
+      'leoluz/nvim-dap-go',
+    },
+    config = config 'plugin.nvim_dap',
+  },
+
+  { -- Collection of various small independent plugins/modules
+    'echasnovski/mini.nvim',
+    config = config 'plugin.mini',
+  },
+
+  { -- Highlight, edit, and navigate code
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate',
+    opts = require('plugin.nvim_treesitter').opts,
+    config = function(_, opts)
+      -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+
+      ---@diagnostic disable-next-line: missing-fields
+      require('nvim-treesitter.configs').setup(opts)
+    end,
+  },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
