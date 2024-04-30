@@ -43,11 +43,10 @@ function M.setup()
   local workspace_dir = vim.fn.stdpath 'data' .. '/site/java/workspace-root/' .. project_name
   os.execute('mkdir -p ' .. workspace_dir)
 
-  -- local bundles = {
-  --   vim.fn.glob(vim.fn.stdpath 'config' .. '/resources/java-debug.jar', true),
-  -- }
+  local bundles = {
+    vim.fn.glob(vim.fn.expand '~/.config/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-0.52.0.jar', true),
+  }
   -- vim.list_extend(bundles, vim.split(vim.fn.glob(vim.fn.stdpath 'config' .. '/resources/vscode-java-test-main/server/*.jar', true), '\n'))
-  local bundles = {}
 
   local config = {
     cmd = {
@@ -92,6 +91,7 @@ function M.setup()
     pattern = 'java',
     callback = function()
       jdtls.start_or_attach(config)
+      require('jdtls').setup_dap()
       vim.keymap.set('n', '<F9>', function()
         require('jdtls').test_class()
       end)

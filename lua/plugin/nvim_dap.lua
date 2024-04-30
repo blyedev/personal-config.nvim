@@ -24,7 +24,7 @@ function M.setup()
       type = 'java',
       request = 'attach',
       name = 'Debug (Attach) - Gradle',
-      hostName = '0.0.0.0',
+      hostName = '127.0.0.1',
       port = 5005, -- Ensure this matches the port used in Gradle settings
     },
   }
