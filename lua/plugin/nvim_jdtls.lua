@@ -1,73 +1,109 @@
 local M = {}
 
 function M.setup()
-  -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
+  local mason_registry = require 'mason-registry'
+  local jdtls = require 'jdtls'
+
+  -- Early termination if jdtls is not installed
+  if not mason_registry.is_installed 'jdtls' then
+    print 'jdtls is not installed via Mason.'
+    return
+  end
+
+  local function find_launcher_jar(jdtls_path)
+    local plugins_path = jdtls_path .. '/plugins'
+    local find_command = "find '" .. plugins_path .. "' -type f -name 'org.eclipse.equinox.launcher_*.jar' -print -quit"
+
+    local handle = io.popen(find_command)
+
+    if handle == nil then
+      return
+    end
+
+    local result = handle:read '*l' -- Read only the first line of output
+    handle:close()
+
+    return result -- directly return the path
+  end
+
+  local jdtls_path = mason_registry.get_package('jdtls'):get_install_path()
+  local path_to_launcher = find_launcher_jar(jdtls_path)
+  local path_to_lsp_server = jdtls_path .. '/config_linux'
+  local lombok_path = jdtls_path .. '/lombok.jar'
+
+  local root_markers = { 'mvnw', 'gradlew', 'build.gradle' }
+  local root_dir = require('jdtls.setup').find_root(root_markers)
+
+  if root_dir == '' then
+    return
+  end
+
+  -- TODO: Audit
+  local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+  local workspace_dir = vim.fn.stdpath 'data' .. '/site/java/workspace-root/' .. project_name
+  os.execute('mkdir -p ' .. workspace_dir)
+
+  -- local bundles = {
+  --   vim.fn.glob(vim.fn.stdpath 'config' .. '/resources/java-debug.jar', true),
+  -- }
+  -- vim.list_extend(bundles, vim.split(vim.fn.glob(vim.fn.stdpath 'config' .. '/resources/vscode-java-test-main/server/*.jar', true), '\n'))
+  local bundles = {}
+
   local config = {
-    -- The command that starts the language server
-    -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
     cmd = {
-
-      'java', -- or '/path/to/java17_or_newer/bin/java'
-      -- depends on if `java` is in your $PATH env variable and if it points to the right version.
-
+      os.getenv 'JAVA_HOME' .. '/bin/java',
       '-Declipse.application=org.eclipse.jdt.ls.core.id1',
       '-Dosgi.bundles.defaultStartLevel=4',
       '-Declipse.product=org.eclipse.jdt.ls.core.product',
       '-Dlog.protocol=true',
       '-Dlog.level=ALL',
+      -- '-javaagent:' .. lombok_path, -- Why?
       '-Xmx1g',
       '--add-modules=ALL-SYSTEM',
       '--add-opens',
       'java.base/java.util=ALL-UNNAMED',
       '--add-opens',
       'java.base/java.lang=ALL-UNNAMED',
-
-      -- 💀
       '-jar',
-      '/path/to/jdtls_install_location/plugins/org.eclipse.equinox.launcher_VERSION_NUMBER.jar',
-      -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
-      -- Must point to the                                                     Change this to
-      -- eclipse.jdt.ls installation                                           the actual version
-
-      -- 💀
+      path_to_launcher,
       '-configuration',
-      '/path/to/jdtls_install_location/config_SYSTEM',
-      -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        ^^^^^^
-      -- Must point to the                      Change to one of `linux`, `win` or `mac`
-      -- eclipse.jdt.ls installation            Depending on your system.
-
-      -- 💀
-      -- See `data directory configuration` section in the README
+      path_to_lsp_server,
       '-data',
-      '/path/to/unique/per/project/workspace/folder',
+      workspace_dir,
     },
 
-    -- 💀
-    -- This is the default if not provided, you can remove it. Or adjust as needed.
-    -- One dedicated LSP server & client will be started per unique root_dir
-    root_dir = require('jdtls.setup').find_root { '.git', 'mvnw', 'gradlew' },
+    root_dir = root_dir,
 
-    -- Here you can configure eclipse.jdt.ls specific settings
-    -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
-    -- for a list of options
+    -- Further configuration
     settings = {
       java = {},
     },
 
-    -- Language server `initializationOptions`
-    -- You need to extend the `bundles` with paths to jar files
-    -- if you want to use additional eclipse.jdt.ls plugins.
-    --
-    -- See https://github.com/mfussenegger/nvim-jdtls#java-debug-installation
-    --
-    -- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
+    flags = {
+      allow_incremental_sync = true,
+    },
+
     init_options = {
-      bundles = {},
+      bundles = bundles,
     },
   }
-  -- This starts a new client & server,
-  -- or attaches to an existing client & server depending on the `root_dir`.
-  -- require('jdtls').start_or_attach(config)
+
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'java',
+    callback = function()
+      jdtls.start_or_attach(config)
+      vim.keymap.set('n', '<F9>', function()
+        require('jdtls').test_class()
+      end)
+      vim.keymap.set('n', '<leader><F5>', function()
+        require('jdtls').test_nearest_method()
+      end)
+      vim.keymap.set('n', '<leader>gf', function()
+        require('jdtls').organize_imports()
+        vim.lsp.buf.format()
+      end, {})
+    end,
+  })
 end
 
 return M

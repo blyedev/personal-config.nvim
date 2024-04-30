@@ -19,59 +19,6 @@ function M.setup()
     },
   }
 
-  dap.adapters.java = function(callback)
-    -- callback {
-    --   type = 'server',
-    --   host = '127.0.0.1',
-    --   port = 5005,
-    -- }
-    -- Ensure that an LSP client that can handle the java debug request is active
-    local clients = vim.lsp.get_active_clients()
-    if not clients then
-      print 'No active LSP client available'
-      return
-    end
-
-    -- Find a Java LSP client
-    local client = nil
-    for _, lsp_client in ipairs(clients) do
-      if lsp_client.name == 'jdtls' then -- assuming the Java LSP client is named 'jdtls'
-        client = lsp_client
-        break
-      end
-    end
-
-    if not client then
-      print 'Java LSP client not available'
-      return
-    end
-
-    -- Send a request to the Java LSP to start a debug session
-    local params = {
-      -- You might need to adjust these parameters based on your project's specifics
-      -- This is just an example and may not directly apply
-      command = 'vscode.java.startDebugSession',
-    }
-
-    client.request('workspace/executeCommand', params, function(err, result)
-      if err then
-        print('Error starting debug session: ' .. err.message)
-        return
-      end
-
-      local port = result and result.port
-      if port then
-        callback {
-          type = 'server',
-          host = '127.0.0.1',
-          port = port,
-        }
-      else
-        print 'Failed to get debugging port from LSP'
-      end
-    end, vim.api.nvim_get_current_buf())
-  end
-
   dap.configurations.java = {
     {
       type = 'java',

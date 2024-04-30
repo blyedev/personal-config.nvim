@@ -1,6 +1,7 @@
 -- nvim-cmp
 --
 -- A lazy configuration for nvim-comp
+
 local M = {}
 
 function M.setup()

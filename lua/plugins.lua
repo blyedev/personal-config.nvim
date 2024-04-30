@@ -75,12 +75,20 @@ require('lazy').setup({
     config = config 'plugin.telescope',
   },
 
+  {
+
+    'williamboman/mason.nvim',
+    dependencies = {
+      'williamboman/mason-lspconfig.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+    },
+    config = config 'plugin.mason',
+  },
+
   { -- mason for installing lsps
     'neovim/nvim-lspconfig',
     dependencies = {
       'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       { 'j-hui/fidget.nvim', opts = {} },
       { 'folke/neodev.nvim', opts = {} },
@@ -90,6 +98,10 @@ require('lazy').setup({
 
   {
     'mfussenegger/nvim-jdtls',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'mfussenegger/nvim-dap',
+    },
     config = config 'plugin.nvim_jdtls',
   },
 
@@ -100,7 +112,7 @@ require('lazy').setup({
     opts = require('plugin.conform').opts,
   },
 
-  {
+  { -- Autocomplete
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
     dependencies = {
