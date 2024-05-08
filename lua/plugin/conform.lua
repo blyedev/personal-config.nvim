@@ -19,6 +19,7 @@ M.opts = {
   format_on_save = false,
   formatters_by_ft = {
     lua = { 'stylua' },
+    markdown = { 'markdownlint' }
     -- python = { "isort", "black" },
     --
     -- You can use a sub-list to tell conform to run *until* a formatter

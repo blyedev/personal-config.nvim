@@ -18,6 +18,7 @@ function M.setup()
       },
     },
     ruff_lsp = {},
+    jsonls = {},
     ['nginx-language-server'] = {},
   }
 
@@ -27,6 +28,7 @@ function M.setup()
   vim.list_extend(ensure_installed, {
     'stylua',
     'jdtls',
+    'markdownlint',
   })
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
