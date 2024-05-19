@@ -3,6 +3,7 @@ local M = {}
 function M.setup()
   local lint = require 'lint'
   lint.linters_by_ft = {
+    html = { 'htmlhint' },
     markdown = { 'markdownlint' },
     yaml = { 'actionLint' },
   }

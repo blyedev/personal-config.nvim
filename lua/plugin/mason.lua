@@ -5,9 +5,6 @@ function M.setup()
   capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
   local servers = {
-    angularls = {},
-    tsserver = {},
-    eslint = {},
     lua_ls = {
       settings = {
         Lua = {
@@ -17,7 +14,15 @@ function M.setup()
         },
       },
     },
+    gradle_ls = {},
     ruff_lsp = {},
+    jedi_language_server = {},
+    angularls = {},
+    tsserver = {},
+    eslint = {},
+    html = {},
+    cssls = {},
+    lemminx = {},
     jsonls = {},
     ['nginx-language-server'] = {},
   }
@@ -29,6 +34,7 @@ function M.setup()
     'stylua',
     'jdtls',
     'markdownlint',
+    'htmlhint',
   })
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
