@@ -24,7 +24,6 @@ function M.setup()
     cssls = {},
     lemminx = {},
     jsonls = {},
-    ['nginx-language-server'] = {},
   }
 
   require('mason').setup()
