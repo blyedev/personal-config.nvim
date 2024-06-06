@@ -87,11 +87,15 @@ function M.setup()
     },
   }
 
+  config['on_attach'] = function()
+    require('jdtls.dap').setup_dap_main_class_configs()
+    require('jdtls').setup_dap { hotcodereplace = 'auto' }
+  end
+
   vim.api.nvim_create_autocmd('FileType', {
     pattern = 'java',
     callback = function()
       jdtls.start_or_attach(config)
-      require('jdtls').setup_dap()
       vim.keymap.set('n', '<leader>gf', function()
         require('jdtls').organize_imports()
         vim.lsp.buf.format()
