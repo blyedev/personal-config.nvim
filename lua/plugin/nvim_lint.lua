@@ -5,7 +5,7 @@ function M.setup()
   lint.linters_by_ft = {
     html = { 'htmlhint' },
     markdown = { 'markdownlint' },
-    yaml = { 'actionLint' },
+    yaml = { 'actionlint' },
   }
 
   -- To allow other plugins to add linters to require('lint').linters_by_ft,
