@@ -14,16 +14,17 @@ function M.setup()
         },
       },
     },
+    kotlin_language_server = {},
     gradle_ls = {},
     ruff_lsp = {},
     jedi_language_server = {},
     angularls = {},
     tsserver = {},
     eslint = {},
-    html = {},
     cssls = {},
     lemminx = {},
     jsonls = {},
+    intelephense = {},
   }
 
   require('mason').setup()
@@ -32,9 +33,12 @@ function M.setup()
   vim.list_extend(ensure_installed, {
     'stylua',
     'jdtls',
+    'mypy',
     'markdownlint',
     'actionlint',
-    'htmlhint',
+    'prettierd',
+    'prettier',
+    'buildifier',
   })
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

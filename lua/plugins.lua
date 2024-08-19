@@ -1,4 +1,3 @@
--- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
@@ -76,7 +75,6 @@ require('lazy').setup({
   },
 
   {
-
     'williamboman/mason.nvim',
     dependencies = {
       'williamboman/mason-lspconfig.nvim',

@@ -3,9 +3,10 @@ local M = {}
 function M.setup()
   local lint = require 'lint'
   lint.linters_by_ft = {
-    html = { 'htmlhint' },
+    python = { 'mypy' },
     markdown = { 'markdownlint' },
     yaml = { 'actionlint' },
+    buildifier = { 'buildifier' },
   }
 
   -- To allow other plugins to add linters to require('lint').linters_by_ft,
@@ -19,6 +20,7 @@ function M.setup()
   lint.linters_by_ft['inko'] = nil
   lint.linters_by_ft['janet'] = nil
   lint.linters_by_ft['json'] = nil
+  lint.linters_by_ft['html'] = nil
   -- lint.linters_by_ft['markdown'] = nil
   lint.linters_by_ft['rst'] = nil
   lint.linters_by_ft['ruby'] = nil

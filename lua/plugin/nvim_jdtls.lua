@@ -32,7 +32,21 @@ function M.setup()
   local lombok_path = jdtls_path .. '/lombok.jar'
 
   local root_markers = { 'mvnw', 'gradlew', 'build.gradle' }
-  local root_dir = require('jdtls.setup').find_root(root_markers)
+
+  -- Custom find_root function
+  local function custom_find_root(markers)
+    local cwd = vim.fn.getcwd()
+    for _, marker in ipairs(markers) do
+      if vim.loop.fs_stat(vim.fn.expand(cwd .. '/' .. marker)) then
+        return cwd
+      end
+    end
+
+    -- Fallback to default find_root function if no markers found in cwd
+    return require('jdtls.setup').find_root(markers)
+  end
+
+  local root_dir = custom_find_root(root_markers)
 
   if root_dir == '' then
     return
@@ -56,7 +70,7 @@ function M.setup()
       '-Declipse.product=org.eclipse.jdt.ls.core.product',
       '-Dlog.protocol=true',
       '-Dlog.level=ALL',
-      -- '-javaagent:' .. lombok_path, -- Why?
+      '-javaagent:' .. lombok_path, -- Why?
       '-Xmx1g',
       '--add-modules=ALL-SYSTEM',
       '--add-opens',
